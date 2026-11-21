@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Execution {{ execution.id }}</h2>
+<p><strong>Workflow:</strong> {{ execution.workflow_name }}</p>
+<p><strong>Status:</strong> {{ execution.status }}</p>
+<p><strong>Current step:</strong> {{ execution.current_step_index }}</p>
+{% if execution.error_message %}<p class="error">{{ execution.error_message }}</p>{% endif %}
+
+<h3>Steps</h3>
+{% if steps %}
+<table>
+    <thead><tr><th>Index</th><th>Type</th><th>Status</th><th>Resume at</th><th>Result/Error</th></tr></thead>
+    <tbody>
+    {% for step in steps %}
+    <tr>
+        <td>{{ step.step_index }}</td>
+        <td>{{ step.step_type }}</td>
+        <td class="status-{{ step.status | lower }}">{{ step.status }}</td>
+        <td>{{ step.resume_at or '-' }}</td>
+        <td>{{ step.result or step.error_message or '-' }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>Steps have not started.</p>
+{% endif %}
+{% endblock %}

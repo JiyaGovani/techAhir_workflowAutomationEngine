@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>{{ workflow.name }}</h2>
+<p><strong>Definition:</strong></p>
+<pre>{{ workflow.definition | tojson(indent=2) }}</pre>
+<form method="post" action="{{ url_for('start_workflow', workflow_id=workflow.id) }}">
+    <label for="input_data">Execution input JSON</label>
+    <textarea id="input_data" name="input_data" rows="4">{"order_value": 600}</textarea>
+    <button type="submit">Start workflow</button>
+</form>
+
+<h3>Executions</h3>
+{% if executions %}
+<table>
+    <thead><tr><th>ID</th><th>Status</th><th>Current step</th><th>Updated</th><th></th></tr></thead>
+    <tbody>
+    {% for execution in executions %}
+    <tr>
+        <td>{{ execution.id }}</td>
+        <td class="status-{{ execution.status | lower }}">{{ execution.status }}</td>
+        <td>{{ execution.current_step_index }}</td>
+        <td>{{ execution.updated_at }}</td>
+        <td><a href="{{ url_for('execution_detail', execution_id=execution.id) }}">Inspect</a></td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>No executions started.</p>
+{% endif %}
+{% endblock %}

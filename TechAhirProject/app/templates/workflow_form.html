@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Create Workflow</h2>
+{% if error %}<p class="error">{{ error }}</p>{% endif %}
+<form id="workflow-form" method="post" action="{{ url_for('create_workflow') }}">
+    <label for="name">Workflow name</label>
+    <input id="name" name="name" value="{{ name or '' }}" required>
+
+    <h3>Steps</h3>
+    <div id="step-builder"></div>
+    <button type="button" id="add-step">Add step</button>
+
+    <label for="steps">Steps JSON</label>
+    <textarea id="steps" name="steps" rows="12" required>{{ steps or '[{"type":"TASK","task":"record_order_created","config":{"order_id":"1001"}},{"type":"WAIT","seconds":30},{"type":"MESSAGE","recipient":"customer@example.com","content":"Thank you for your order"}]' }}</textarea>
+    <button type="submit">Create workflow</button>
+</form>
+<script src="{{ url_for('static', filename='workflow-form.js') }}"></script>
+{% endblock %}

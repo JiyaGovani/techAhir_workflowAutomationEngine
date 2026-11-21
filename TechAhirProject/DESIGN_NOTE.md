@@ -1,0 +1,8 @@
+# Workflow Automation Engine — Design Note
+
+- **Implemented storage and execution:** Workflows and executions are stored in SQLite. A workflow definition contains an ordered JSON steps array; execution progress uses a persistent `current_step_index`, and every step has a persisted status and configuration.
+- **Concurrent worker execution:** The initial version uses one background Python thread. It uses SQLite transactions and `BEGIN IMMEDIATE` before claiming work, so only one worker connection can claim an execution at a time. The code is structured for multiple worker processes to be added later.
+- **Delayed steps:** WAIT steps store an ISO timestamp in `resume_at`. The worker scans persisted waiting steps and processes them only after the timestamp. It does not use `time.sleep()` for workflow delays.
+- **Crash and restart recovery:** Pending, running, waiting, and completed states survive process restarts. A restart does not rerun the first step: the worker reads `current_step_index` and the existing step row. Completed steps are skipped.
+- **Duplicate message prevention:** MESSAGE rows are uniquely keyed by `step_id`, and the message insert plus step-completion update occur in one SQLite transaction. A crash before commit leaves work repeatable; a crash after commit skips the insert.
+- **Implemented versus future scale:** The current implementation is a local modular monolith suitable for the assignment and small workloads. Scaling to 50,000 active workflows would require a PostgreSQL database, an indexed scheduler, an external durable queue, and distributed workers. These technologies are proposed, not implemented.

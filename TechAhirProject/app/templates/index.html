@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Workflows</h2>
+{% if workflows %}
+<table>
+    <thead><tr><th>Name</th><th>Executions</th><th>Created</th><th></th></tr></thead>
+    <tbody>
+    {% for workflow in workflows %}
+    <tr>
+        <td>{{ workflow.name }}</td>
+        <td>{{ workflow.execution_count }}</td>
+        <td>{{ workflow.created_at }}</td>
+        <td><a href="{{ url_for('workflow_detail', workflow_id=workflow.id) }}">View</a></td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>No workflows have been created.</p>
+{% endif %}
+{% endblock %}
